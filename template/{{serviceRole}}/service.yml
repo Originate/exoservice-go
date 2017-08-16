@@ -2,7 +2,6 @@ type: {{serviceType}}
 description: {{description}}
 author: {{author}}
 
-setup: glide install
 startup:
   command: go run server.go
   online-text: online at port
