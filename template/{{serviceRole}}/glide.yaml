@@ -1,7 +1,12 @@
-package: github.com/Originate/exosphere/exosphere-shared/templates/add-service/exoservice-go
 import:
 - package: github.com/Originate/exocom
+  version: v0.24.0
+  subpackages:
+  - go/exorelay
+  - go/exoservice
 testImport:
 - package: gopkg.in/yaml.v2
 - package: github.com/DATA-DOG/godog
   version: v0.7.2
+- package: github.com/Originate/go-execplus
+  version: v0.6.0

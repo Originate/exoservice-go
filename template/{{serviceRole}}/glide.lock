@@ -1,25 +1,27 @@
-hash: 35a54fe55eaa8dd2c9953c72ed0dac99868330e88ff247843294dc6b2f45fe62
-updated: 2017-06-01T10:12:36.361490359-07:00
+hash: 63d658821096dc016ece21b440a1e950f278e5a509530186a6d24de7250b20f0
+updated: 2017-08-25T14:47:32.274528047-07:00
 imports:
+- name: github.com/gorilla/websocket
+  version: ea4d1f681babbce9545c9c5f3d5194a789c89f5b
 - name: github.com/Originate/exocom
-  version: d24bf79bd1d6f75357437d89ad7fb96c83562ea8
+  version: 81dccff756ca0335e6cbee7ac70f277a6ad0c704
   subpackages:
   - go/exocom-mock
   - go/exorelay
   - go/exoservice
   - go/structs
   - go/utils
+- name: github.com/pkg/errors
+  version: 645ef00459ed84a119197bfb8d8205042c6df63d
 - name: github.com/satori/go.uuid
-  version: 5bf94b69c6b68ee1b541973bb8e1144db23a194b
-- name: golang.org/x/net
-  version: 55a3084c9119aeb9ba2437d595b0a7e9cb635da9
-  subpackages:
-  - websocket
+  version: 879c5887cd475cd7864858769793b2ceb0d44feb
 testImports:
 - name: github.com/DATA-DOG/godog
   version: 92fbee719c9593813b24a6ef042bcad40324ede4
   subpackages:
   - colors
   - gherkin
+- name: github.com/Originate/go-execplus
+  version: e558a031bc731f517c919a95b52753e026b45849
 - name: gopkg.in/yaml.v2
   version: cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b

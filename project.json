@@ -1,6 +1,6 @@
 {
-  "serviceRole": "",
-  "serviceType": "",
+  "serviceRole": "ping-service",
+  "serviceType": "ping-service",
   "description": "",
-  "author": "",
+  "author": ""
 }

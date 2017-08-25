@@ -2,11 +2,9 @@ package main_test
 
 import (
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
-	"os/exec"
 	"testing"
 
 	yaml "gopkg.in/yaml.v2"
@@ -14,6 +12,7 @@ import (
 	"github.com/DATA-DOG/godog"
 	"github.com/Originate/exocom/go/exocom-mock"
 	"github.com/Originate/exocom/go/structs"
+	execplus "github.com/Originate/go-execplus"
 )
 
 type ServiceConfig struct {
@@ -55,8 +54,7 @@ func newExocomMock(port int) *exocomMock.ExoComMock {
 func FeatureContext(s *godog.Suite) {
 	var exocom *exocomMock.ExoComMock
 	var role string
-	var serviceCommand *exec.Cmd
-	var serviceCommandStdout, serviceCommandStderr io.ReadCloser
+	var cmdPlus *execplus.CmdPlus
 	port := 4100
 
 	s.BeforeSuite(func() {
@@ -69,22 +67,15 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.BeforeScenario(func(arg1 interface{}) {
-		serviceCommand = nil
+		cmdPlus = nil
 	})
 
 	s.AfterScenario(func(interface{}, error) {
 		exocom.Reset()
-		if serviceCommand != nil {
-			err := serviceCommand.Process.Kill()
+		if cmdPlus != nil {
+			err := cmdPlus.Kill()
 			if err != nil {
 				panic(fmt.Errorf("Error when killing the service command: %v", err))
-			}
-			stderr, err := ioutil.ReadAll(serviceCommandStderr)
-			if err != nil {
-				panic(fmt.Errorf("Error reading stderr for service command: %v", err))
-			}
-			if len(stderr) > 0 {
-				panic(fmt.Errorf("Service command printed to stderr: %s", stderr))
 			}
 		}
 	})
@@ -101,24 +92,24 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^an instance of this service$`, func() error {
-		serviceCommand = exec.Command("go", "run", "server.go")
-		env := os.Environ()
-		env = append(env, fmt.Sprintf("EXOCOM_PORT=%d", port), fmt.Sprintf("ROLE=%d", role))
-		serviceCommand.Env = env
-		var err error
-		serviceCommandStdout, err = serviceCommand.StdoutPipe()
+		cmdPlus = execplus.NewCmdPlus("go", "run", "server.go")
+		env := append(os.Environ(), "EXOCOM_HOST=localhost", fmt.Sprintf("EXOCOM_PORT=%d", port), fmt.Sprintf("ROLE=%d", role))
+		cmdPlus.SetEnv(env)
+		err := cmdPlus.Start()
+		if os.Getenv("DEBUG") != "" {
+			go func() {
+				outputChannel, _ := cmdPlus.GetOutputChannel()
+				for {
+					outputChunk := <-outputChannel
+					fmt.Println(outputChunk.Chunk)
+				}
+			}()
+		}
 		if err != nil {
 			return err
 		}
-		serviceCommandStderr, err = serviceCommand.StderrPipe()
-		if err != nil {
-			return err
-		}
-		err = serviceCommand.Start()
-		if err != nil {
-			return err
-		}
-		return exocom.WaitForConnection()
+		_, err = exocom.WaitForConnection()
+		return err
 	})
 
 	s.Step(`^receiving the "([^"]*)" command$`, func(name string) error {
