@@ -3,9 +3,7 @@ description: {{description}}
 author: {{author}}
 
 startup:
-  command: go run server.go
   online-text: online at port
-tests: go test
 
 messages:
   receives:
@@ -14,3 +12,8 @@ messages:
     - pong
 
 dependencies:
+
+development:
+  scripts:
+    run: go run server.go
+    test: go test
